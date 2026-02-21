@@ -454,15 +454,15 @@ nav.scrolled .nav-links a {
 
 .portfolio-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
 }
 
 .portfolio-item {
     position: relative;
     overflow: hidden;
     border-radius: var(--radius);
-    height: 420px;
+    height: 360px;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
 }
