@@ -5,7 +5,7 @@ window.addEventListener('scroll', () => {
 });
 
 // ===== SCROLL REVEAL =====
-const revealElements = document.querySelectorAll('section, .usp-card, .portfolio-item, .review-card, .step, .price-card, .contact-card');
+const revealElements = document.querySelectorAll('section, .usp-card, .review-card, .step, .price-card, .contact-card');
 const revealObserver = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
@@ -121,3 +121,84 @@ function updateTimer() {
 
 updateTimer();
 setInterval(updateTimer, 60000);
+
+// ===== PORTFOLIO CAROUSEL =====
+(function () {
+    const grid = document.getElementById('portfolioGrid');
+    const dotsContainer = document.getElementById('portfolioDots');
+    if (!grid || !dotsContainer) return;
+
+    const items = Array.from(grid.querySelectorAll('.portfolio-item'));
+
+    // 1) Build dots
+    items.forEach((_, i) => {
+        const dot = document.createElement('button');
+        dot.className = 'portfolio-dot' + (i === 0 ? ' active' : '');
+        dot.setAttribute('aria-label', `사진 ${i + 1}`);
+        dot.addEventListener('click', () => {
+            items[i].scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'start' });
+        });
+        dotsContainer.appendChild(dot);
+    });
+
+    const dots = Array.from(dotsContainer.querySelectorAll('.portfolio-dot'));
+
+    // 2) Scroll-in fade animation via IntersectionObserver
+    const fadeObserver = new IntersectionObserver((entries) => {
+        entries.forEach((entry, idx) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    entry.target.classList.add('visible');
+                }, idx * 60);
+            }
+        });
+    }, { threshold: 0.15, root: grid });
+
+    items.forEach(item => fadeObserver.observe(item));
+
+    // Also trigger visible for items already in view on load
+    setTimeout(() => {
+        items.forEach(item => {
+            const rect = item.getBoundingClientRect();
+            if (rect.left < window.innerWidth && rect.right > 0) {
+                item.classList.add('visible');
+            }
+        });
+    }, 200);
+
+    // 3) Update active dot on scroll
+    grid.addEventListener('scroll', () => {
+        const scrollLeft = grid.scrollLeft;
+        const itemW = items[0].offsetWidth + 20; // width + gap
+        const idx = Math.round(scrollLeft / itemW);
+        dots.forEach((d, i) => d.classList.toggle('active', i === idx));
+    }, { passive: true });
+
+    // 4) Mouse drag to scroll
+    let isDragging = false, startX = 0, scrollStart = 0;
+
+    grid.addEventListener('mousedown', e => {
+        isDragging = true;
+        startX = e.pageX - grid.offsetLeft;
+        scrollStart = grid.scrollLeft;
+        grid.classList.add('is-dragging');
+    });
+
+    document.addEventListener('mousemove', e => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const x = e.pageX - grid.offsetLeft;
+        const walk = (x - startX) * 1.2;
+        grid.scrollLeft = scrollStart - walk;
+    });
+
+    document.addEventListener('mouseup', () => {
+        isDragging = false;
+        grid.classList.remove('is-dragging');
+    });
+
+    grid.addEventListener('mouseleave', () => {
+        isDragging = false;
+        grid.classList.remove('is-dragging');
+    });
+})();

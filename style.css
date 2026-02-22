@@ -452,19 +452,72 @@ nav.scrolled .nav-links a {
     background: var(--white);
 }
 
+/* Portfolio Scroll Carousel */
+.portfolio-carousel-wrap {
+    position: relative;
+    overflow: hidden;
+}
+
+.portfolio-scroll-hint {
+    text-align: center;
+    color: var(--accent);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    margin-bottom: 20px;
+    opacity: 0.75;
+}
+
+.portfolio-scroll-hint span {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
 .portfolio-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    display: flex;
     gap: 20px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    cursor: grab;
+    padding-bottom: 12px;
+}
+
+.portfolio-grid::-webkit-scrollbar {
+    display: none;
+}
+
+.portfolio-grid.is-dragging {
+    cursor: grabbing;
+    scroll-snap-type: none;
 }
 
 .portfolio-item {
     position: relative;
     overflow: hidden;
     border-radius: var(--radius);
-    height: 360px;
+    min-width: 300px;
+    height: 400px;
     box-shadow: var(--shadow-sm);
     cursor: pointer;
+    scroll-snap-align: start;
+    flex-shrink: 0;
+    /* scroll-in animation */
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.6s ease, transform 0.6s ease, box-shadow 0.3s ease;
+}
+
+.portfolio-item.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.portfolio-item:hover {
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.18);
 }
 
 .portfolio-item img {
@@ -472,10 +525,11 @@ nav.scrolled .nav-links a {
     height: 100%;
     object-fit: cover;
     transition: var(--transition);
+    pointer-events: none;
 }
 
 .portfolio-item:hover img {
-    transform: scale(1.08);
+    transform: scale(1.06);
 }
 
 .portfolio-overlay {
@@ -483,8 +537,8 @@ nav.scrolled .nav-links a {
     bottom: 0;
     left: 0;
     width: 100%;
-    padding: 30px;
-    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    padding: 28px 24px 20px;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.72));
     color: var(--white);
     transition: var(--transition);
 }
@@ -496,15 +550,41 @@ nav.scrolled .nav-links a {
     border-radius: 50px;
     font-size: 0.72rem;
     font-weight: 700;
-    text-transform: uppercase;
     letter-spacing: 1px;
     margin-bottom: 8px;
 }
 
 .portfolio-overlay h3 {
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 700;
+    line-height: 1.4;
 }
+
+/* Scroll dots indicator */
+.portfolio-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+.portfolio-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-light);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: none;
+    padding: 0;
+}
+
+.portfolio-dot.active {
+    width: 24px;
+    border-radius: 4px;
+    background: var(--accent);
+}
+
 
 /* ===== S5: PROCESS ===== */
 .section-process {
